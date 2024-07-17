@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: mysql_5.7
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: nacos
+    volumes:
+      - ./mysql5.7/data:/var/lib/mysql
+      - ./mysql5.7/config/my.cnf:/etc/mysql/conf.d/my.cnf
+
+  redis:
+    image: redis:6.2
+    container_name: redis6.2
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: xxx
+    command: redis-server --requirepass xxx
+    volumes:
+      - ./redis6.2/data:/data
+
+  nacos:
+    image: nacos/nacos-server:v2.3.2
+    container_name: nacos2.3.2
+    restart: always
+    ports:
+      # web 界面访问端口
+      - 8848:8848
+      # 程序使用 grpc 连接的端口
+      - 9848:9848
+    environment:
+      - MODE=standalone
+      - JVM_XMS=256m
+      - JVM_XMX=256m
+      - JVM_XMN=12m
+    volumes:
+      - ./nacos2.3.2/conf:/home/nacos/conf
+      - ./nacos2.3.2/data:/home/nacos/data
+      - ./nacos2.3.2/logs:/home/nacos/logs
+
+  rabbitmq:
+    image: rabbitmq:3.8.9-management
+    container_name: rabbitmq_server_3.8.9
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: xxx
+      RABBITMQ_DEFAULT_PASS: xxx
+    volumes:
+      - ./rabbitmq3.8.9/data:/var/lib/rabbitmq
+      - ./rabbitmq3.8.9/my_plugins/rabbitmq_delayed_message_exchange-3.8.9-0199d11c.ez:/plugins/rabbitmq_delayed_message_exchange-3.8.9-0199d11c.ez
+

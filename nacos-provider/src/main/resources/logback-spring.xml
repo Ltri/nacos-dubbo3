@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration debug="false">
+    <contextName>${appName}</contextName>
+    <springProperty name="appName" scope="context" source="spring.application.name"/>
+    <springProperty name="logLevel" scope="context" source="log.level" defaultValue="info"/>
+    <springProperty name="ServerIP" scope="context" source="spring.cloud.client.ip-address" defaultValue="0.0.0.0"/>
+    <springProperty name="ServerPort" scope="context" source="server.port" defaultValue="0000"/>
+    <!-- 彩色日志 -->
+    <!-- 彩色日志依赖的渲染类 -->
+    <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
+    <conversionRule conversionWord="wex"
+                    converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
+    <conversionRule conversionWord="wEx"
+                    converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
+
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%green(%d{yyyy-MM-dd HH:mm:ss.SSS}) %highlight([%thread]) %highlight(%-5level) %boldMagenta(%logger{50}) - %cyan(%msg%n)"/>
+
+    <property name="CONSOLE_LOG_PATTERN_NO_COLOR"
+              value="[${appName}:${ServerIP}:${ServerPort}] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"/>
+
+    <property name="logger.root" value="logs"/>
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="com.yomahub.tlog.core.enhance.logback.AspectLogbackEncoder">
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <appender name="INFO_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <file>${logger.root}/${appName}-info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logger.root}/${appName}-info.%d{yyyyMMdd}_%i.log</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="com.yomahub.tlog.core.enhance.logback.AspectLogbackEncoder">
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+        </encoder>
+    </appender>
+<!--    <appender name="WARN_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">-->
+<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+<!--            <level>WARN</level>-->
+<!--        </filter>-->
+<!--        <append>true</append>-->
+<!--        <file>${logger.root}/${appName}-warn.log</file>-->
+<!--        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">-->
+<!--            <fileNamePattern>${logger.root}/${appName}-warn.%d{yyyyMMdd}_%i.gz</fileNamePattern>-->
+<!--            <maxHistory>100</maxHistory>-->
+<!--            <maxFileSize>100MB</maxFileSize>-->
+<!--        </rollingPolicy>-->
+<!--        <encoder class="com.yomahub.tlog.core.enhance.logback.AspectLogbackEncoder">-->
+<!--            <charset class="java.nio.charset.Charset">UTF-8</charset>-->
+<!--            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>-->
+<!--        </encoder>-->
+<!--    </appender>-->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <append>true</append>
+        <file>${logger.root}/${appName}-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${logger.root}/${appName}-error.%d{yyyyMMdd}_%i.log</fileNamePattern>
+            <maxHistory>100</maxHistory>
+            <maxFileSize>100MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="com.yomahub.tlog.core.enhance.logback.AspectLogbackEncoder">
+            <charset class="java.nio.charset.Charset">UTF-8</charset>
+            <pattern>${CONSOLE_LOG_PATTERN_NO_COLOR}</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.one.webserver" level="${logLevel}"/>
+    <logger name="com.alibaba.dubbo" level="ERROR" />
+    <logger name="com.wyzfang" level="${logLevel}"/>
+    <logger name="com.alibaba.nacos" level="error"/>
+    <root level="${logLevel}">
+        <appender-ref ref="console"/>
+        <appender-ref ref="INFO_FILE"/>
+<!--        <appender-ref ref="WARN_FILE"/>-->
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+</configuration>

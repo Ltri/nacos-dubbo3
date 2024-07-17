@@ -1,0 +1,70 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:p6spy:mysql://127.0.0.1:3306/testdb?characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowMultiQueries=true&serverTimezone=Asia/Shanghai&useLegacyDatetimeCode=false
+    username: root
+    password: root
+    driverClassName: com.p6spy.engine.spy.P6SpyDriver
+    hikari:
+      minimum-idle: 10
+      maximum-pool-size: 60
+      max-lifetime: 1000000
+      connection-test-query: SELECT 1
+      idle-timeout: 600000
+      connection-timeout: 60000
+      validation-timeout: 3000
+      login-timeout: 5
+  main:
+    allow-bean-definition-overriding: true
+    allow-circular-references: true
+  application:
+    name: nacos-provider
+  #启动环境
+  profiles:
+    active: local
+  config:
+    import:
+      - optional:nacos:common-rabbitmq-${spring.profiles.active}.yaml
+      - optional:nacos:common-redis-${spring.profiles.active}.yaml
+  cloud:
+    nacos:
+      username: nacos
+      password: nacos
+      discovery:
+        server-addr: 127.0.0.1:8848
+        namespace: local
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yaml
+
+#mybatis
+mybatis-plus:
+  global-config:
+    # 数据库相关配置
+    db-config:
+      id-type: AUTO
+      insert-strategy: not_null
+      update-strategy: not_null
+      table-underline: true
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
+
+#日志相关
+logging:
+  config: classpath:logback-spring.xml
+
+dubbo:
+  application:
+    name: dubbo3-provider
+  scan:
+    base-packages: ltri.nacos.dubboservice
+  protocol:
+    name: dubbo
+    port: -1
+  registry:
+    address: nacos://127.0.0.1:8848?namespace=local&username=nacos&password=nacos
+    version: 1.0.0
+  provider:
+    version: 1.0.0
